@@ -19,6 +19,25 @@
   <div class="container">
     <h1 class="title">Hello World!</h1>
   </div>
+  <!-- video code starts here -->
+  <video autoplay></video>
+  <script>
+    var onFailSoHard = function(e) {
+      console.log('Reeeejected!', e);
+    };
+
+    // Not showing vendor prefixes.
+    navigator.getUserMedia({video: true, audio: true}, function(localMediaStream) {
+      var video = document.querySelector('video');
+      video.src = window.URL.createObjectURL(localMediaStream);
+
+      // Note: onloadedmetadata doesn't fire in Chrome when using it with getUserMedia.
+      // See crbug.com/110938.
+      video.onloadedmetadata = function(e) {
+        // Ready to go. Do some stuff.
+      };
+    }, onFailSoHard);
+  </script>
   <script src="js/main.js"></script>
 </body>
 </html>
