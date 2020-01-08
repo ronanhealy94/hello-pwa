@@ -22,21 +22,45 @@
   <!-- video code starts here -->
   <video autoplay></video>
   <script>
-    var onFailSoHard = function(e) {
-      console.log('Reeeejected!', e);
-    };
+    (function() {
+    'use strict';
+    var video = document.querySelector('video')
+      , canvas;
 
-    // Not showing vendor prefixes.
-    navigator.getUserMedia({video: true, audio: true}, function(localMediaStream) {
-      var video = document.querySelector('video');
-      video.src = window.URL.createObjectURL(localMediaStream);
+    
+    function takeSnapshot() {
+      var img = document.querySelector('img') || document.createElement('img');
+      var context;
+      var width = video.offsetWidth
+        , height = video.offsetHeight;
 
-      // Note: onloadedmetadata doesn't fire in Chrome when using it with getUserMedia.
-      // See crbug.com/110938.
-      video.onloadedmetadata = function(e) {
-        // Ready to go. Do some stuff.
-      };
-    }, onFailSoHard);
+      canvas = canvas || document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+
+      context = canvas.getContext('2d');
+      context.drawImage(video, 0, 0, width, height);
+
+      img.src = canvas.toDataURL('image/png');
+      document.body.appendChild(img);
+    }
+
+    
+    if (navigator.mediaDevices) {
+      // access the web cam
+      navigator.mediaDevices.getUserMedia({video: true})
+     
+        .then(function(stream) {
+         
+		  video.srcObject = stream
+          video.addEventListener('click', takeSnapshot);
+        })
+      
+        .catch(function(error) {
+          document.body.textContent = 'Could not access the camera. Error: ' + error.name;
+        });
+    }
+  })();
   </script>
   <script src="js/main.js"></script>
 </body>
